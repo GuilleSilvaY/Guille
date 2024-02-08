@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Tue Feb  6 13:38:44 2024
+
+@author: GASY
+"""
+
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
+
+# Parámetros
+num_antenas = 8  # elementos de antena
+num_estaciones_terrestres = 3  # Ground Sta
+posicion_satelite = np.array([3, 3])  # Posición del satélite
+posicion_estaciones_terrestres = np.array([[5, 5], [-5, -5], [10, -5]])  # Posiciones de las GS
+
+# fases iniciales aleatorias en [0 2PI]
+fases_iniciales = np.random.uniform(0, 2*np.pi, num_antenas)
+
+# valores IQ (apuntamineto)
+def calcular_direccion_haz(fases):
+    suma_cos = np.sum(np.cos(fases))
+    suma_sin = np.sum(np.sin(fases))
+    return np.arctan2(suma_sin, suma_cos)
+
+# Función para actualizar la dirección del haz basada en la configuración actual de fases
+def actualizar_direccion_haz(i):
+    plt.cla()  
+    ax.plot(posicion_satelite[0], posicion_satelite[1], 'ro', label='Satélite') # estatico
+    ax.plot(posicion_estaciones_terrestres[:, 0], posicion_estaciones_terrestres[:, 1], 'bo', label='Estaciones Terrestres')
+
+    # Actualizar fases (cambio aleatorio de fase)
+    fases = fases_iniciales + np.random.uniform(-0.1, 0.1, num_antenas) # otro ejemplo de uso [-.1 .1]
+
+    # apuntamiento varialble
+    direccion_haz = calcular_direccion_haz(fases)
+
+    
+    posiciones_antenas = np.array([[np.cos(theta), np.sin(theta)] for theta in np.linspace(0, 2*np.pi, num_antenas)])
+    for pos, fase in zip(posiciones_antenas, fases):
+        ax.plot([posicion_satelite[0], posicion_satelite[0] + pos[0]], [posicion_satelite[1], posicion_satelite[1] + pos[1]], 'k-')
+        ax.plot(posicion_satelite[0] + pos[0], posicion_satelite[1] + pos[1], 'go')  # Elemento de antena
+
+    
+    ax.plot([posicion_satelite[0], posicion_satelite[0] + np.cos(direccion_haz)],
+            [posicion_satelite[1], posicion_satelite[1] + np.sin(direccion_haz)], 'r--', label='Dirección del Haz')
+
+    ax.set_title('Formación de Haz en Antenas Satelitales')
+    ax.set_xlabel('Posición X')
+    ax.set_ylabel('Posición Y')
+    ax.legend()
+
+#  FuncAnimation 
+fig, ax = plt.subplots()
+vis = FuncAnimation(fig, actualizar_direccion_haz, frames=range(10), interval=10)
+plt.show()
