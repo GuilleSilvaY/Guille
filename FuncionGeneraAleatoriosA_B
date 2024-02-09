@@ -1,0 +1,7 @@
+import random
+
+a = int(input("Ingresa el límite inferior del rango: "))  # Solicita al usuario el límite inferior del rango.
+b = int(input("Ingresa el límite superior del rango: "))  # Solicita al usuario el límite superior del rango.
+
+numeros_generados = [random.randint(a, b) for _ in range(10)]  # Genera una lista de 10 números aleatorios entre a y b, inclusive.
+print("Números generados:", numeros_generados)
